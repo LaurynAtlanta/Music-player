@@ -1,8 +1,26 @@
-import React from 'react';
+import React,{useEffect} from 'react';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faPlay, faAngleLeft, faAngleRight, faPause} from '@fortawesome/free-solid-svg-icons';
+import {playAudio} from '../util';
 
-const Player = ({songs, currentSong, setCurrentSong, isPlaying, setIsPlaying, audioRef, songInfo, setSongInfo}) => {
+const Player = ({songs, currentSong, setSongs, setCurrentSong, isPlaying, setIsPlaying, audioRef, songInfo, setSongInfo}) => {
+
+    useEffect(()=>{
+        const newSongs = songs.map((eachSong)=> {
+            if(eachSong.id === currentSong.id){
+                return{
+                    ...eachSong,
+                    active: true,
+                };
+            } else{
+                return{
+                    ...eachSong,
+                    active: false,
+                } ;
+            }
+        });
+        setSongs(newSongs);
+    },[currentSong]);
 
     const playSongHandler=()=>{
         if(isPlaying){
@@ -32,11 +50,13 @@ const Player = ({songs, currentSong, setCurrentSong, isPlaying, setIsPlaying, au
         if(direction=== 'skip-back'){
             if((currentIndex-1) % songs.length ===-1){
                 setCurrentSong(songs[songs.length-1]);
+                playAudio(isPlaying, audioRef);
                 return; // need return otherwise the set current song below will run 
             }
             setCurrentSong(songs[(currentIndex - 1)% songs.length]) 
             //uses modules to check the remainder. Ex: current index -1 is 8 and songs length is 8 the remiainder is 0. songs[0]
         }
+        playAudio(isPlaying, audioRef);
     }
 
     return (  
@@ -49,7 +69,7 @@ const Player = ({songs, currentSong, setCurrentSong, isPlaying, setIsPlaying, au
                     value={songInfo.currentTime}
                     onChange={dragHandler}
                     type="range"/>
-                <p>{getTime(songInfo.duration)}</p>
+                <p>{songInfo.duration ? getTime(songInfo.duration) : '0:00'}</p>
             </div>
             <div className="play-control">
                 <FontAwesomeIcon 
