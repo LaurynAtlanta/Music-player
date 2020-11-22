@@ -2,7 +2,7 @@ import React from 'react';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faPlay, faAngleLeft, faAngleRight, faPause} from '@fortawesome/free-solid-svg-icons';
 
-const Player = ({currentSong, isPlaying, setIsPlaying, audioRef, songInfo, setSongInfo}) => {
+const Player = ({songs, currentSong, setCurrentSong, isPlaying, setIsPlaying, audioRef, songInfo, setSongInfo}) => {
 
     const playSongHandler=()=>{
         if(isPlaying){
@@ -24,6 +24,21 @@ const Player = ({currentSong, isPlaying, setIsPlaying, audioRef, songInfo, setSo
         setSongInfo({...songInfo, currentTime: e.target.value} )
     }
 
+    const skipTrackHandler=(direction)=>{
+        let currentIndex= songs.findIndex((song)=> song.id === currentSong.id);
+        if(direction === 'skip-forward'){
+            setCurrentSong(songs[(currentIndex + 1)% songs.length])
+        }
+        if(direction=== 'skip-back'){
+            if((currentIndex-1) % songs.length ===-1){
+                setCurrentSong(songs[songs.length-1]);
+                return; // need return otherwise the set current song below will run 
+            }
+            setCurrentSong(songs[(currentIndex - 1)% songs.length]) 
+            //uses modules to check the remainder. Ex: current index -1 is 8 and songs length is 8 the remiainder is 0. songs[0]
+        }
+    }
+
     return (  
         <div className='player'>
             <div className="time-control">
@@ -38,6 +53,7 @@ const Player = ({currentSong, isPlaying, setIsPlaying, audioRef, songInfo, setSo
             </div>
             <div className="play-control">
                 <FontAwesomeIcon 
+                    onClick={()=> skipTrackHandler('skip-back')}
                     className='skip-back' 
                     size='2x' 
                     icon={faAngleLeft}/>   
@@ -47,6 +63,7 @@ const Player = ({currentSong, isPlaying, setIsPlaying, audioRef, songInfo, setSo
                     size='2x' 
                     icon={isPlaying? faPause : faPlay}/>   
                 <FontAwesomeIcon 
+                    onClick={()=> skipTrackHandler('skip-forward')}
                     className='skip-forward' 
                     size='2x' 
                     icon={faAngleRight}/>   
