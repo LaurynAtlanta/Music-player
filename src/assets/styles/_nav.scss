@@ -17,5 +17,8 @@ nav{
             background:  rgb(129, 129, 129);
             color: white;
         }
+        @media screen and (max-width: 768px){
+            z-index: 10;
+        }
     }
 }

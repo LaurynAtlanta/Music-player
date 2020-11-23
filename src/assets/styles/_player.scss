@@ -38,6 +38,9 @@
         p{
             padding: 1rem;
         }
+        @media screen and (max-width: 768px){
+                width: 90%;
+        }
     }
 
     .play-control{
@@ -50,7 +53,11 @@
         svg{
             cursor: pointer;
         }
+        @media screen and (max-width: 768px){
+            width: 80%;
     }
+    }
+    
 }
 
 input[type='range']:focus{
@@ -61,4 +68,6 @@ input[type='range']::-webkit-slider-thumb{
     height: 16px;
     width: 16px;
 }
+
+
 
