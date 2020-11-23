@@ -1,12 +1,12 @@
-import React,{useEffect} from 'react';
+import React from 'react';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faPlay, faAngleLeft, faAngleRight, faPause} from '@fortawesome/free-solid-svg-icons';
 
 const Player = ({songs, currentSong, setSongs, setCurrentSong, isPlaying, setIsPlaying, audioRef, songInfo, setSongInfo}) => {
 
-    useEffect(()=>{
+    const activeLibraryHandler=(nextPrev)=>{
         const newSongs = songs.map((eachSong)=> {
-            if(eachSong.id === currentSong.id){
+            if(eachSong.id === nextPrev.id){
                 return{
                     ...eachSong,
                     active: true,
@@ -19,7 +19,7 @@ const Player = ({songs, currentSong, setSongs, setCurrentSong, isPlaying, setIsP
             }
         });
         setSongs(newSongs);
-    },[currentSong]);
+    }
 
     const playSongHandler=()=>{
         if(isPlaying){
@@ -45,16 +45,19 @@ const Player = ({songs, currentSong, setSongs, setCurrentSong, isPlaying, setIsP
         let currentIndex= songs.findIndex((song)=> song.id === currentSong.id);
         if(direction === 'skip-forward'){
             await setCurrentSong(songs[(currentIndex + 1)% songs.length])
+            activeLibraryHandler(songs[(currentIndex + 1)% songs.length])
         }
         if(direction=== 'skip-back'){
             if((currentIndex-1) % songs.length ===-1){
                 await setCurrentSong(songs[songs.length-1]);
+                activeLibraryHandler(songs[(currentIndex - 1)])
                 if(isPlaying){
                     audioRef.current.play();
                 }
                 return; // need return otherwise the set current song below will run 
             }
             await setCurrentSong(songs[(currentIndex - 1)% songs.length]) 
+            activeLibraryHandler(songs[(currentIndex - 1)% songs.length])
             //uses modules to check the remainder. Ex: current index -1 is 8 and songs length is 8 the remiainder is 0. songs[0]
         }
         if(isPlaying){
